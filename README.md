@@ -1,9 +1,4 @@
-# React-Variety-Example
-React를 공부하면서 다양한 라이브러리들을 어떻게 결합하는지 연구 해보는 레포입니다.
-
-Rxjs, Web3, axios, Lottie등의 다양한 라이브러리 예제등을 올릴 예정이며 추후 라이브러리를 어떻게 만드는 지에 대하여 알아볼 생각입니다.
-
-## Rxjs
+## Rxjs & React Example[![Build Status](https://travis-ci.com/SayBGM/RxJS-example.svg?branch=master)](https://travis-ci.com/SayBGM/RxJS-example)
   ### 소개
  - [ReactiveX](http://reactivex.io/) 프로젝트에서 출발한 리액티브 프로그래밍을 지원하는 자바스크립트 라이브러리
  - 이벤트 스트림을 옵저버블(Observable)이라는 객체로 표현한 후 비동기 이벤트 기반의 프로그램 작성을 도움
