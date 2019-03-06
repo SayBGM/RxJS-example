@@ -1,9 +1,17 @@
 ## Rxjs & React Example[![Build Status](https://travis-ci.com/SayBGM/RxJS-example.svg?branch=master)](https://travis-ci.com/SayBGM/RxJS-example)
+
   ### 소개
  - [ReactiveX](http://reactivex.io/) 프로젝트에서 출발한 리액티브 프로그래밍을 지원하는 자바스크립트 라이브러리
  - 이벤트 스트림을 옵저버블(Observable)이라는 객체로 표현한 후 비동기 이벤트 기반의 프로그램 작성을 도움
  - 이벤트 처리를 위한 API로 다양한 연산자를 제공하는 함수형 프로그래밍 기법이 도입되어 있음
  - 이는 리액티브 프로그래밍을 쉽게 해주는 장점을 가지고 있음
+
+
+ ### Git 커밋 규칙
+ - ✊: 새로운 문서 작성
+ - 📝: 문서 수정
+ - 🛠: 테스트 추가
+ - 💅: 사진 혹은 스타일 수정
 
 ### 내가 왜 써야될까?
 [![Video Label](http://img.youtube.com/vi/2f09-veX4HA/0.jpg)](https://youtu.be/2f09-veX4HA)
