@@ -58,3 +58,27 @@ setTimeout(() => {
   );
 }, 1350);
 ```
+
+### 옵저버블과 옵저버의 관계
+함수를 호출하여 옵저버블을 생성하게 되면 옵저버블 내에는 ```subscribe```함수가 있다. 이 옵저버블 객체는 아무 일도 하지 않고 어떤 일을 해야 할지에 대한 정보만 있다.
+
+이를 subscribe함수를 호출하여 옵저버와 연결을 한 뒤 동작을 실행시킨다. 옵저버 객체는  ```next```, ```error```, ```complete```, 세 개의 함수로 구성되어 있다.
+
+```subscribe```함수에는 ```next```, ```error```, ```complete``` 함수 순서로 옵저버의 구성 요소 혹은 콜백 함수를 개체로 감싼 옵저버 객체 전달을 할 수 있다.
+
+### next, error, complete
+  * ```next```
+    * 옵저버블 객체에서 ```subscribe```호출 후 옵저버블이 옵저버의 complete나 error를 호출 하기 전까지 next 함수로 값을 발행함
+    * complete나 error를 만나면 그 이후에 설정되어있는 next 함수는 무시됨
+  * ```complete```
+    * 옵저버블 객체에서 ```subscribe```호출 후 옵저버블이 ```complete```를 호출하게 되면 구독을 해제시킨다.
+  * ```error```
+    * ```complete```와 비슷하지만 error를 출력하기 위한 함수이다.
+
+## 구독 객체 관리 (옵저버블 구독 해제)
+1. ```complete```
+  * ```complete```는 Observable 객체 내에서 구독을 해제할 수 있는 함수이다. ```complete```를 사용하게 되면 자원 해제가 이루어 지면서 구독 해제가 이뤄진다.
+2. ```unsubscribe```
+  * ```unsubscribe```는 구독을 멈추는 함수이다. ```subscribe```가 리턴하는 객체는 ```Subscription``` 클래스 타입인데 ```Subscription``` 클래스 타입은 unsubscribe 함수를 호출해야 구독을 멈추게 할 수 있다.
+  * [ Angular / Rxjs  Angular에서 unsubscribe(구독취소)은 언제 어떻게 해야하는가?](https://web-front-end.tistory.com/71)
+

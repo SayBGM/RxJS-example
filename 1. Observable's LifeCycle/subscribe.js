@@ -1,17 +1,20 @@
 const { Observable } = require('rxjs');
 
 const observableCreated$ = Observable.create((observer) => {
-  for (let i = 1; i <= 10; i++) {
-    setTimeout(() => {
-      observer.next(i);
-      if (i === 10) {
-        observer.complete();
-      }
-    }, 300 * i);
-  }
+  let i = 0;
+  const setIntervalID = setInterval(() => {
+    i++;
+    observer.next(i);
+    if (i === 30) {
+      observer.complete();
+    }
+  }, 500);
+  return function unsubscribe() {
+    clearInterval(setIntervalID);
+  };
 });
 
-observableCreated$.subscribe(
+const obser = observableCreated$.subscribe(
   function next(item) {
     console.log(`observerA: ${item}`);
   },
@@ -26,13 +29,17 @@ observableCreated$.subscribe(
 setTimeout(() => {
   observableCreated$.subscribe(
     function next(item) {
-      console.log(`observerB: ${item}`);
+      console.log(`\t\t\t\t\t\t\tobserverB: ${item}`);
     },
     function error(err) {
-      console.log(`observerB: ${err}`);
+      console.log(`\t\t\t\t\t\t\tobserverB: ${err}`);
     },
     function complete() {
-      console.log('observerB: complete');
+      console.log('\t\t\t\t\t\t\tobserverB: complete');
     }
   );
 }, 1350);
+
+setTimeout(() => {
+  obser.unsubscribe();
+}, 5000);
