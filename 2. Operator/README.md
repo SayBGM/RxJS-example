@@ -119,4 +119,128 @@ lift(operator) {
 ```
 여기 보면 기존 옵저버블인 this를 observable.source에 넣기 때문이다.
 
+## 배열과 비교해 본 옵저버블 연산자
+옵저버블 객체는 여러 값을 다룰 수 있는 함수형 연산자를 제공한다. Array#extras나 로대시에서 여러 값을 처리하는 데 제공하는 함수형 프로그래밍의 연산자와 비슷하다
+
+아래 코드는 옵저버블 생성 예제에 ```map```이라는 변환 연산자를 적용한 것이다.
+
+```javascript
+const { Obseravable } = require('rxjs');
+const { map } = require('rxjs/operators');
+
+const observableCreated$ = Obseravble.create((observer) => {
+  observer.next(1);
+  observer.next(2);
+  observer.complete();
+})
+
+observableCreated$.pipe(
+  map((value) => value * 2)
+).subscribe(
+  function next(item) {
+    console.log(item);
+  }
+)
+```
+
+이 코드를 실행하게 되면
+```
+2
+4
+```
+와 같은 결과를 얻게 된다. 그럼 배열로 구현하게 되면 어떻게 될까?
+
+```javascript
+console.log([1 ,2].map((value) => value * 2));
+```
+```javascript
+[2, 4]
+```
+
+배열과 옵저버블에서 map 연산자를 사용하는 데에 큰 차이가 없어 보이지만 옵저버블은 실제 각각의 값 처리를 구독하는 시점에 하지만 배열은 연산자를 호출할 때마다 새로운 배열을 만들기 때문에 옵저버블이 성능상으로 장점이 있다.
+
+그럼 극단적인 사례로 성능을 비교해 보자
+
+배열을 이용한 사례
+```javascript
+console.log(
+  [1 ,2]
+  .map((value) => value * 2)
+  .map((value) => value + 1)
+  .map((value) => value * 3)
+  );
+```
+```javascript
+[9, 15]
+```
+
+map 연산자를 한 번 호출할 때마다 같은 크기의 새로운 배열을 생성한다. 즉, map 연산자 수에 비례하여 배열을 생성하기 때문에 메모리 공간을 차지해 가비지 컬렉터에서 제거해야 하는 문제가 있다. 또한 배열을 생성하는 시간 비용도 발생하기 때문에 문제가 심각하다
+
+그럼 옵저버블에서 map 연산자를 여러번 호출하는 예제를 보자
+
+```javascript
+const { Observable } = require('rxjs');
+const { map, toArray } = require('rxjs/operators');
+
+const observableCreated$ = Observable.create((observer) => {
+  const arr = [1, 2];
+  for(i in arr) {
+    observer.next(arr[i]);
+  }
+  observer.complete();
+})
+
+observableCreated$.pipe(
+  map((value) => value * 2),
+  map((value) => value + 1),
+  map((value) => value * 3),
+  toArray()
+).subscribe(
+  function next(item) {
+    console.log(item);
+  }
+)
+```
+
+이 코드를 실행하게 되면 ```map```함수를 사용하였을 때와 똑같은 값이 나온다.
+
+파이퍼블 연산자인 ```map```으로 값을 감쌀 때 마다 새로운 옵저버블 객체만 생성되고 구독 전까지 실행하지 않으므로 배열이 생성도리 때처럼 실제 연산자가 동작하지 않는다.
+
+아래 코드를 보면 어떻게 동작하는지 이해가 갈 수 있다.
+```javascript
+// subscribe 호출 시 toArray에서 필요한 array 생성
+const array = [];
+
+// observableCreated 안 for문에서 observer.next(arr[i])를 호출할 때
+const aInput = arr[i];
+
+// observableCreated 안 함수에서 사용하는 시작 옵저버
+observerA.next(aInput);
+const bInput = aInput*2;
+
+observerB.next(aInput);
+const cInput = bInput+1;
+
+observerC.next(aInput);
+const dInput = cInput*3;
+
+observerD.next(aInput);
+array.put(dInput);
+
+// observableCreated 안에서 observer.complete를 호출할 때, toArray()에서 실행되는 동작
+// subscribe 안에 있는 마지막 읍저버이기도 하다.
+observerE.next(array);
+```
+ 
+ 
+ 이런 옵저버블으니 동작 방식은 **지연 실행**이 가능하다는 장점이 있다. 배열은 map 연산자를 호출하는 순간 새로운 배열이 나오도록 동작이 바로 실행된다. 옵저버블은 구독하는 시점까지 실행을 미룰 수 있어서 지연 실행할 수 있다.
+
+ 마치 함수 호출처럼 선언은 해두었지만 실제로 호출 하기 전까지는 실행하지 않는 것처럼 말이다. 다만 함수는 return 값이 하나지만 옵저버블은 error나 complete 함수를 호출 할 때가지 next 함수로 여러 개 값을 보낼 수 있다는 차이가 있다.
+
+
+RxJS 공식문서에서는 RxJS를 이벤트를 위한 로대시로 생각해보라고 설명한다.
+
+로대시에서도 함수를 미리 합성한 후 마지막에 value라는 함수를 호출하면 연산자를 여러 번 감싸도 배열은 한 번만 생성하도록 사용할 수 있다. RxJS는 배열뿐만 아니라 이벤트나 비동기 연산에도 적용할 수 있다는 특징이 있는게 로대시와의 차별점이다.
+
+---
 [<b id="footnote1">1</b>](#a1) 부수효과가 없는 함수 즉, 어떤 함수에 동일한 인자를 주었을 때 항상 같은 값을 리턴하는 함수이자 외부의 상태를 변경하지 않는 함수
